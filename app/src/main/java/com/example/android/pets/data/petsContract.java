@@ -16,7 +16,7 @@ public final class petsContract{
         public static final String TABLE_NAME = "pets";
 
         //id label
-        public static final String COLUMN_PET_ID = BaseColumns._ID;
+        public static final String _ID = BaseColumns._ID;
 
         //name of pets
         public static final String COLUMN_PET_NAME = "pets";
