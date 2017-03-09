@@ -72,7 +72,17 @@ public class CatalogActivity extends AppCompatActivity {
             // Display the number of rows in the Cursor (which reflects the number of rows in the
             // pets table in the database).
             TextView displayView = (TextView) findViewById(R.id.text_view_pet);
-            displayView.setText("Number of rows in pets database table: " + cursor.getCount());
+            displayView.setText("Number of rows: " + cursor.getCount());
+
+            TextView displayView2 = (TextView) findViewById(R.id.text_view_pet_column);
+            displayView2.setText("Number of Columns: " + cursor.getColumnCount());
+
+            TextView displayView3 = (TextView) findViewById(R.id.text_view_pet_column_names);
+            String columnNames[] = cursor.getColumnNames();
+            String columnStrings = "";
+            for (int i = 0; i < columnNames.length; i++){columnStrings += " " + columnNames[i];}
+            displayView3.setText("Column names: " + columnStrings);
+
         } finally {
             // Always close the cursor when you're done reading from it. This releases all its
             // resources and makes it invalid.
