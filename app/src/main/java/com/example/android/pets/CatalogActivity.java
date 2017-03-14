@@ -25,6 +25,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.example.android.pets.data.petsContract.petEntry;
@@ -34,6 +35,9 @@ import com.example.android.pets.data.PetDbHelper;
  * Displays list of pets that were entered and stored in the app.
  */
 public class CatalogActivity extends AppCompatActivity {
+    // To access our database, we instantiate our subclass of SQLiteOpenHelper
+    // and pass the context, which is the current activity.
+    PetDbHelper mDbHelper = new PetDbHelper(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,37 +57,70 @@ public class CatalogActivity extends AppCompatActivity {
         displayDatabaseInfo();
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        displayDatabaseInfo();
+    }
 
     /**
      * Temporary helper method to display information in the onscreen TextView about the state of
      * the pets database.
      */
     private void displayDatabaseInfo() {
-        // To access our database, we instantiate our subclass of SQLiteOpenHelper
-        // and pass the context, which is the current activity.
-        PetDbHelper mDbHelper = new PetDbHelper(this);
-
         // Create and/or open a database to read from it
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
 
+        //column selection for query method
+        String columns[] = {petEntry._ID,
+                petEntry.COLUMN_PET_NAME,
+                petEntry.COLUMN_PET_BREED,
+                petEntry.COLUMN_PET_GENDER,
+                petEntry.COLUMN_PET_WEIGHT};
+        //String selection = petEntry.COLUMN_PET_GENDER + " =?";
+        //String selectionArgs[] = {Integer.toString(petEntry.GENDER_MALE)};
+
         // Perform this raw SQL query "SELECT * FROM pets"
         // to get a Cursor that contains all rows from the pets table.
-        Cursor cursor = db.rawQuery("SELECT * FROM " + petEntry.TABLE_NAME, null);
+        Cursor cursor = db.query(petEntry.TABLE_NAME,columns,null,null, null, null, null);
         try {
             // Display the number of rows in the Cursor (which reflects the number of rows in the
             // pets table in the database).
             TextView displayView = (TextView) findViewById(R.id.text_view_pet);
             displayView.setText("Number of rows: " + cursor.getCount());
 
-            TextView displayView2 = (TextView) findViewById(R.id.text_view_pet_column);
-            displayView2.setText("Number of Columns: " + cursor.getColumnCount());
-
-            TextView displayView3 = (TextView) findViewById(R.id.text_view_pet_column_names);
+            //displays columns
             String columnNames[] = cursor.getColumnNames();
             String columnStrings = "";
-            for (int i = 0; i < columnNames.length; i++){columnStrings += " " + columnNames[i];}
-            displayView3.setText("Column names: " + columnStrings);
+            for (int i = 0; i < columnNames.length; i++){
+                columnStrings += columnNames[i] + " - ";
+            }
+            displayView.append("\n\n" + columnStrings.substring(0, columnStrings.length() - 2) + "\n\n");
 
+            //displays row data
+            cursor.moveToPosition(-1);
+            while(cursor.moveToNext()){
+                String rows = "";
+                for (int columnIndex = 0; columnIndex < cursor.getColumnCount(); columnIndex++) {
+                    if (columnIndex == 3) {
+                        int gender = cursor.getInt(columnIndex);
+                        switch (gender) {
+                            case 0:
+                                rows += "unknown" + " - ";
+                                break;
+                            case 1:
+                                rows += "male" + " - ";
+                                break;
+                            case 2:
+                                rows += "female" + " - ";
+                                break;
+                        }
+                    } else {
+                        rows += cursor.getString(columnIndex) + " - ";
+                    }
+                }
+                displayView.append(rows.substring(0, rows.length() - 2) + "\n");
+            }
         } finally {
             // Always close the cursor when you're done reading from it. This releases all its
             // resources and makes it invalid.
@@ -92,10 +129,6 @@ public class CatalogActivity extends AppCompatActivity {
     }
 
     private void insertPet(){
-        // To access our database, we instantiate our subclass of SQLiteOpenHelper
-        // and pass the context, which is the current activity.
-        PetDbHelper mDbHelper = new PetDbHelper(this);
-
         // Gets the data repository in write mode
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 

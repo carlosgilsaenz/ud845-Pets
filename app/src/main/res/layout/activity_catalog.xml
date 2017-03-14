@@ -19,27 +19,11 @@
     tools:context=".CatalogActivity">
 
     <TextView
-    android:id="@+id/text_view_pet"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:padding="@dimen/activity_margin"
+        android:id="@+id/text_view_pet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/activity_margin"
         tools:text="Rows"/>
-
-    <TextView
-        android:id="@+id/text_view_pet_column"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/text_view_pet"
-        android:padding="@dimen/activity_margin"
-        tools:text="Columns"/>
-
-    <TextView
-        android:id="@+id/text_view_pet_column_names"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/text_view_pet_column"
-        android:padding="@dimen/activity_margin"
-        tools:text="Columns_names"/>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
