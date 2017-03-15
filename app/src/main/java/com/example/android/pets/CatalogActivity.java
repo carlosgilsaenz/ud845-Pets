@@ -15,10 +15,12 @@
  */
 package com.example.android.pets;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -27,17 +29,17 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.pets.data.petsContract.petEntry;
 import com.example.android.pets.data.PetDbHelper;
+
+import java.net.URI;
 
 /**
  * Displays list of pets that were entered and stored in the app.
  */
 public class CatalogActivity extends AppCompatActivity {
-    // To access our database, we instantiate our subclass of SQLiteOpenHelper
-    // and pass the context, which is the current activity.
-    PetDbHelper mDbHelper = new PetDbHelper(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +70,6 @@ public class CatalogActivity extends AppCompatActivity {
      * the pets database.
      */
     private void displayDatabaseInfo() {
-        // Create and/or open a database to read from it
-        SQLiteDatabase db = mDbHelper.getReadableDatabase();
-
         //column selection for query method
         String columns[] = {petEntry._ID,
                 petEntry.COLUMN_PET_NAME,
@@ -82,7 +81,9 @@ public class CatalogActivity extends AppCompatActivity {
 
         // Perform this raw SQL query "SELECT * FROM pets"
         // to get a Cursor that contains all rows from the pets table.
-        Cursor cursor = db.query(petEntry.TABLE_NAME,columns,null,null, null, null, null);
+        //Cursor cursor = db.query(petEntry.TABLE_NAME,columns,null,null, null, null, null);
+        Cursor cursor = getContentResolver().query(petEntry.CONTENT_URI,columns,null, null,null);
+
         try {
             // Display the number of rows in the Cursor (which reflects the number of rows in the
             // pets table in the database).
@@ -129,9 +130,6 @@ public class CatalogActivity extends AppCompatActivity {
     }
 
     private void insertPet(){
-        // Gets the data repository in write mode
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
         values.put(petEntry.COLUMN_PET_NAME, "Toto");
@@ -140,10 +138,17 @@ public class CatalogActivity extends AppCompatActivity {
         values.put(petEntry.COLUMN_PET_WEIGHT, 7);
 
         // Insert the new row, returning the primary key value of the new row
-        long newRowId = db.insert(petEntry.TABLE_NAME, null, values);
+        //long newRowId = db.insert(petEntry.TABLE_NAME, null, values);
+        Uri uri = getContentResolver().insert(petEntry.CONTENT_URI, values);
 
-        //checks if insert was successful and updates screen
-        if(newRowId != -1){displayDatabaseInfo();}
+        //perform toast for given outcome
+        if(uri == null){
+            Toast.makeText(this,R.string.save_unsuccessful,Toast.LENGTH_SHORT).show();
+        }else{
+            Toast.makeText(this,R.string.save_successful,Toast.LENGTH_SHORT).show();
+        }
+
+        displayDatabaseInfo();
     }
 
     @Override
