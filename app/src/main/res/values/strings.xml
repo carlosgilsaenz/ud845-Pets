@@ -59,9 +59,16 @@
     <!-- Label for dropdown menu option if the pet is female [CHAR LIMIT=20] -->
     <string name="gender_female">Female</string>
 
+    <!-- Unknown pet Breed [CHAR LIMIT=20] -->
+    <string name="breed_TBD">TBD</string>
+
+    <!-- Unknown pet Name [CHAR LIMIT=20] -->
+    <string name="default_name">Tobi</string>
+
     <!-- Toast msg if pet is saved [CHAR LIMIT=20] -->
     <string name="save_successful">Pet Saved</string>
 
     <!-- Toast msg if pet is not saved [CHAR LIMIT=20] -->
-    <string name="save_unsuccessful">Save Unsuccessful</string>
+    <string name="save_unsuccessful">Invalid Input: Save Unsuccessful</string>
+
 </resources>

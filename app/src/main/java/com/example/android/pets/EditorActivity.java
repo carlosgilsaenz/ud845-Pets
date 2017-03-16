@@ -23,6 +23,7 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,12 +34,15 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.android.pets.data.PetDbHelper;
+import com.example.android.pets.data.PetProvider;
 import com.example.android.pets.data.petsContract.petEntry;
 
 /**
  * Allows user to create a new pet or edit an existing one.
  */
 public class EditorActivity extends AppCompatActivity {
+    /** Tag for the log messages */
+    public static final String LOG_TAG = EditorActivity.class.getSimpleName();
 
     /** EditText field to enter the pet's name */
     private EditText mNameEditText;
@@ -115,7 +119,23 @@ public class EditorActivity extends AppCompatActivity {
         //grab input values from views
         String petName = mNameEditText.getText().toString().trim();
         String petBreed = mBreedEditText.getText().toString().trim();
-        int petWeight = Integer.parseInt(mWeightEditText.getText().toString().trim());
+        String petWeightString = mWeightEditText.getText().toString().trim();
+
+        //Error checking for petWeight
+        int petWeight;
+        if(petWeightString == null || petWeightString.isEmpty()){
+            petWeight = 0;
+        }else{ petWeight = Integer.parseInt(petWeightString);}
+
+        //Ensure petBreed is not empty
+        if(petBreed == null || petBreed.isEmpty()){
+            petBreed = getString(R.string.breed_TBD);
+        }
+
+        //Ensure petName is not empty
+        if(petName == null || petName.isEmpty()){
+            petName = getString(R.string.default_name);
+        }
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();

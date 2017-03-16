@@ -132,10 +132,10 @@ public class CatalogActivity extends AppCompatActivity {
     private void insertPet(){
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
-        values.put(petEntry.COLUMN_PET_NAME, "Toto");
-        values.put(petEntry.COLUMN_PET_BREED, "Terrier");
-        values.put(petEntry.COLUMN_PET_GENDER, 1);
-        values.put(petEntry.COLUMN_PET_WEIGHT, 7);
+        values.put(petEntry.COLUMN_PET_NAME, getString(R.string.default_name));
+        values.put(petEntry.COLUMN_PET_BREED, getString(R.string.breed_TBD));
+        values.put(petEntry.COLUMN_PET_GENDER, petEntry.GENDER_UNKNOWN);
+        values.put(petEntry.COLUMN_PET_WEIGHT, 0);
 
         // Insert the new row, returning the primary key value of the new row
         //long newRowId = db.insert(petEntry.TABLE_NAME, null, values);
