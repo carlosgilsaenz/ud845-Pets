@@ -15,31 +15,33 @@
  */
 package com.example.android.pets;
 
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Switch;
-import android.widget.TextView;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.example.android.pets.data.petsContract.petEntry;
-import com.example.android.pets.data.PetDbHelper;
 
-import java.net.URI;
 
 /**
  * Displays list of pets that were entered and stored in the app.
  */
-public class CatalogActivity extends AppCompatActivity {
+public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+
+    private static final int PET_LOADER = 0;
+    //Create Cursor Adapter for Pets List
+    PetCursorAdapter mCursorAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,77 +58,19 @@ public class CatalogActivity extends AppCompatActivity {
             }
         });
 
-        displayDatabaseInfo();
-    }
+        //assign listView from Activity_Catalog
+        ListView petListView = (ListView) findViewById(R.id.pet_list);
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        displayDatabaseInfo();
-    }
+        // Find and set empty view on the ListView, so that it only shows when the list has 0 items.
+        View emptyView = findViewById(R.id.empty_view);
+        petListView.setEmptyView(emptyView);
 
-    /**
-     * Temporary helper method to display information in the onscreen TextView about the state of
-     * the pets database.
-     */
-    private void displayDatabaseInfo() {
-        //column selection for query method
-        String columns[] = {petEntry._ID,
-                petEntry.COLUMN_PET_NAME,
-                petEntry.COLUMN_PET_BREED,
-                petEntry.COLUMN_PET_GENDER,
-                petEntry.COLUMN_PET_WEIGHT};
-        //String selection = petEntry.COLUMN_PET_GENDER + " =?";
-        //String selectionArgs[] = {Integer.toString(petEntry.GENDER_MALE)};
+        //initialize cursor adapter and set to listView
+        mCursorAdapter = new PetCursorAdapter(this, null);
+        petListView.setAdapter(mCursorAdapter);
 
-        // Perform this raw SQL query "SELECT * FROM pets"
-        // to get a Cursor that contains all rows from the pets table.
-        //Cursor cursor = db.query(petEntry.TABLE_NAME,columns,null,null, null, null, null);
-        Cursor cursor = getContentResolver().query(petEntry.CONTENT_URI,columns,null, null,null);
-
-        try {
-            // Display the number of rows in the Cursor (which reflects the number of rows in the
-            // pets table in the database).
-            TextView displayView = (TextView) findViewById(R.id.text_view_pet);
-            displayView.setText("Number of rows: " + cursor.getCount());
-
-            //displays columns
-            String columnNames[] = cursor.getColumnNames();
-            String columnStrings = "";
-            for (int i = 0; i < columnNames.length; i++){
-                columnStrings += columnNames[i] + " - ";
-            }
-            displayView.append("\n\n" + columnStrings.substring(0, columnStrings.length() - 2) + "\n\n");
-
-            //displays row data
-            cursor.moveToPosition(-1);
-            while(cursor.moveToNext()){
-                String rows = "";
-                for (int columnIndex = 0; columnIndex < cursor.getColumnCount(); columnIndex++) {
-                    if (columnIndex == 3) {
-                        int gender = cursor.getInt(columnIndex);
-                        switch (gender) {
-                            case 0:
-                                rows += "unknown" + " - ";
-                                break;
-                            case 1:
-                                rows += "male" + " - ";
-                                break;
-                            case 2:
-                                rows += "female" + " - ";
-                                break;
-                        }
-                    } else {
-                        rows += cursor.getString(columnIndex) + " - ";
-                    }
-                }
-                displayView.append(rows.substring(0, rows.length() - 2) + "\n");
-            }
-        } finally {
-            // Always close the cursor when you're done reading from it. This releases all its
-            // resources and makes it invalid.
-            cursor.close();
-        }
+        //initiates Loader
+        getSupportLoaderManager().initLoader(PET_LOADER,null, this);
     }
 
     private void insertPet(){
@@ -147,8 +91,6 @@ public class CatalogActivity extends AppCompatActivity {
         }else{
             Toast.makeText(this,R.string.save_successful,Toast.LENGTH_SHORT).show();
         }
-
-        displayDatabaseInfo();
     }
 
     @Override
@@ -173,5 +115,27 @@ public class CatalogActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        //column selection for query method
+        String projection[] = {petEntry._ID,
+                petEntry.COLUMN_PET_NAME,
+                petEntry.COLUMN_PET_BREED };
+        //create and return CursorLoader
+        return new CursorLoader(this, petEntry.CONTENT_URI,projection, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        cursor.moveToFirst();
+        mCursorAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        //wipe contents
+        mCursorAdapter.swapCursor(null);
     }
 }
