@@ -15,6 +15,7 @@
  */
 package com.example.android.pets;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -28,6 +29,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -59,7 +61,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         });
 
         //assign listView from Activity_Catalog
-        ListView petListView = (ListView) findViewById(R.id.pet_list);
+        final ListView petListView = (ListView) findViewById(R.id.pet_list);
 
         // Find and set empty view on the ListView, so that it only shows when the list has 0 items.
         View emptyView = findViewById(R.id.empty_view);
@@ -71,6 +73,20 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
         //initiates Loader
         getSupportLoaderManager().initLoader(PET_LOADER,null, this);
+
+        petListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View petView, int position, long id) {
+                // Create new implicit intent
+                Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
+                // append URI with ID
+                Uri uri = ContentUris.withAppendedId(petEntry.CONTENT_URI, id);
+                // setData with Uri within Intents
+                intent.setData(uri);
+                // start Activity
+                startActivity(intent);
+            }
+        });
     }
 
     private void insertPet(){
