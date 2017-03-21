@@ -26,6 +26,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,6 +41,9 @@ import com.example.android.pets.data.petsContract.petEntry;
  * Displays list of pets that were entered and stored in the app.
  */
 public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+
+    /** Tag for the log messages */
+    public static final String LOG_TAG = CatalogActivity.class.getSimpleName();
 
     private static final int PET_LOADER = 0;
     //Create Cursor Adapter for Pets List
@@ -93,7 +97,6 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
         values.put(petEntry.COLUMN_PET_NAME, getString(R.string.default_name));
-        values.put(petEntry.COLUMN_PET_BREED, getString(R.string.breed_TBD));
         values.put(petEntry.COLUMN_PET_GENDER, petEntry.GENDER_UNKNOWN);
         values.put(petEntry.COLUMN_PET_WEIGHT, 0);
 
@@ -155,7 +158,6 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        cursor.moveToFirst();
         mCursorAdapter.swapCursor(cursor);
     }
 
