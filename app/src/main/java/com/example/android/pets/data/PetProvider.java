@@ -166,11 +166,11 @@ public class PetProvider extends ContentProvider{
         //check gender is not null
         Integer gender = values.getAsInteger(petEntry.COLUMN_PET_GENDER);
         try{
-            if(gender < petEntry.GENDER_UNKNOWN || gender > petEntry.GENDER_MALE){
+            if(gender < petEntry.GENDER_UNKNOWN || gender > petEntry.GENDER_FEMALE){
                 throw new IllegalArgumentException("Invalid Pet Gender");
             }
         }catch (IllegalArgumentException e){
-            Log.e(LOG_TAG,"Error: " + e.getMessage());
+            Log.i(LOG_TAG,"Error: " + e.getMessage());
             return null;
         }
 
@@ -284,7 +284,7 @@ public class PetProvider extends ContentProvider{
         if(values.containsKey(petEntry.COLUMN_PET_GENDER)){
             Integer gender = values.getAsInteger(petEntry.COLUMN_PET_GENDER);
             try{
-                if(gender < petEntry.GENDER_UNKNOWN || gender > petEntry.GENDER_MALE){
+                if(gender < petEntry.GENDER_UNKNOWN || gender > petEntry.GENDER_FEMALE){
                     throw new IllegalArgumentException("Invalid Pet Gender");
                 }
             }catch (IllegalArgumentException e){

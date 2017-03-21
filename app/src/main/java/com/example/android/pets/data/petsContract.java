@@ -36,7 +36,7 @@ public final class petsContract{
         //Gender categorizations
         public static final int GENDER_UNKNOWN = 0;
         public static final int GENDER_MALE = 1;
-        public static final int GENDER_FEMAIL = 2;
+        public static final int GENDER_FEMALE = 2;
 
         //URI creation
         public static final String CONTENT_AUTHORITY = "com.example.android.pets";
